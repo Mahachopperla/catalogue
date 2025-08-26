@@ -6,3 +6,5 @@
     - Read json file and get version info from that file.
     - (utility steps pipeline plugin) to be installed in jenkins to let it read data from json file
 ### Step2:
+    - Next we are going to build code. which means installing dependencies
+    
