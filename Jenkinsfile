@@ -4,6 +4,10 @@ pipeline {
 	}
      environment { 
         appVersion = ''
+        REGION = 'us-east-1'
+        ACC_ID = '582834785619'
+        PROJECT = 'roboshop'
+        COMPONENT = 'catalogue'
     }
     options {
         timeout(time: 30, unit: 'MINUTES')
@@ -44,6 +48,32 @@ pipeline {
                     sh """
                         npm install
                     """
+                }
+            }
+        }
+
+          stage('unit tests') {
+            steps {
+                script {
+                    sh """
+                        echo "unit tests" 
+                    """
+                }
+            }
+        }
+
+        stage('Docker image build') {
+            steps {
+                script {
+                    withAWS(credentials: 'AWS-auth', region: AWS_REGION) { // 'AWS-auth' is the ID of your AWS credentials in Jenkins
+                        
+                        sh """
+                        aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.${REGION}.amazonaws.com
+                        docker build -t ${ACC_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
+                        docker push ${ACC_ID}.dkr.ecr.${REGION}.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+                                               
+                        """
+                    }
                 }
             }
         }
