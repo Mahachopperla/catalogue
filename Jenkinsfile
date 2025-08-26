@@ -3,13 +3,13 @@ pipeline {
 		label "Agent-1"
 	}
      environment { 
-        COURSE = 'DEVOPS'
+        appVersion = ''
     }
     options {
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
-    parameters {
+  /*   parameters {
         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
 
         text(name: 'BIOGRAPHY', defaultValue: '', description: 'Enter some information about the person')
@@ -20,43 +20,25 @@ pipeline {
 
         password(name: 'PASSWORD', defaultValue: 'SECRET', description: 'Enter a password')
 
-    }
+    } */
 
     stages {
-        stage('Build') {
+        stage('Read JSON File') {
             steps {
-                script{
-                    sh """
-                        echo "Hello Build"
-                        sleep 10
-                        env
-                        echo "Hello ${params.PERSON}"
-                    """
+                script {
+                    // Assuming 'package.json' exists in the workspace
+                    def PackageJson = readJSON file: 'package.json' 
+
+                    // Accessing data from the parsed JSON
+                    appVersion = PackageJson.version
+
+                    // printing the extracted value
+                    echo "Package Version: ${appVersion}"
                 }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-                submitter "alice,bob"
-                parameters {
-                    string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-                }
-            }
-            steps {
-                 script{
-                    echo "Hello, ${PERSON}, nice to meet you."
-                    
-                    echo 'Deploying..'
-                }
-            }
-        }
+       
+        
     }
 
     post {
