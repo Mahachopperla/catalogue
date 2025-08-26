@@ -65,7 +65,7 @@ pipeline {
         stage('Docker image build') {
             steps {
                 script {
-                    withAWS(credentials: 'AWS-auth', region: AWS_REGION) { // 'AWS-auth' is the ID of your AWS credentials in Jenkins
+                    withAWS(credentials: 'AWS-auth', region: 'us-east-1') { // 'AWS-auth' is the ID of your AWS credentials in Jenkins
                         
                         sh """
                         aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.${REGION}.amazonaws.com
